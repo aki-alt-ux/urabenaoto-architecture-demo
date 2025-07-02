@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>占部直人建築設計事務所</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 基本スタイル */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #111;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ナビゲーション */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        nav.scrolled {
+            background-color: rgba(17, 17, 17, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 2rem;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ccc;
+        }
+
+        /* ヒーローセクション */
+        .hero {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            z-index: 1;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 3;
+            width: 80%;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease forwards 0.5s;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease forwards 0.8s;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease forwards 1.1s;
+        }
+
+        .hero-btn:hover {
+            background: #fff;
+            color: #111;
+        }
+
+        /* アニメーション */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* セクション共通 */
+        section {
+            padding: 6rem 4rem;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50%;
+            height: 1px;
+            background-color: #fff;
+        }
+
+        /* 作品セクション */
+        .works {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .works.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .work-item {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .work-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .work-item:hover .work-image {
+            transform: scale(1.05);
+        }
+
+        .work-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            padding: 1rem;
+        }
+
+        .work-item:hover .work-overlay {
+            opacity: 1;
+        }
+
+        .work-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .work-description {
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* 哲学セクション */
+        .philosophy {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .philosophy-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .philosophy-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .philosophy-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* プロフィールセクション */
+        .profile {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 3rem;
+            align-items: center;
+        }
+
+        .profile-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .profile-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .profile-image.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .profile h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        /* お問い合わせセクション */
+        .contact {
+            background-color: #0a0a0a;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .contact-form.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            background-color: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #fff;
+            color: #111;
+        }
+
+        /* フッター */
+        footer {
+            padding: 3rem 4rem;
+            background-color: #0a0a0a;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links li {
+            margin: 0 1rem;
+        }
+
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ccc;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .social-links li {
+            margin: 0 1rem;
+        }
+
+        .social-links a {
+            color: #fff;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ccc;
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        /* レスポンシブデザイン */
+        @media (max-width: 992px) {
+            nav {
+                padding: 1.5rem 2rem;
+            }
+
+            section {
+                padding: 5rem 2rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+
+            .profile {
+                grid-template-columns: 1fr;
+                grid-gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-content p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* 視差効果 */
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 400px;
+            position: relative;
+        }
+
+        .parallax-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .parallax-content {
+            max-width: 800px;
+        }
+
+        .parallax-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .parallax-content p {
+            font-size: 1.1rem;
+        }
+
+        /* スクロールアニメーション用インジケーター */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator i {
+            font-size: 2rem;
+            color: #fff;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーション -->
+    <nav id="navbar">
+        <a href="#" class="logo">占部直人建築設計事務所</a>
+        <ul class="nav-links">
+            <li><a href="#works">作品</a></li>
+            <li><a href="#philosophy">建築哲学</a></li>
+            <li><a href="#profile">プロフィール</a></li>
+            <li><a href="#contact">お問い合わせ</a></li>
+        </ul>
+    </nav>
+
+    <!-- ヒーローセクション -->
+    <section class="hero">
+        <div class="hero-slide active" style="background-image: url('/api/placeholder/1920/1080');"></div>
+        <div class="hero-slide" style="background-image: url('/api/placeholder/1920/1081');"></div>
+        <div class="hero-slide" style="background-image: url('/api/placeholder/1920/1082');"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>空間からクリエイティビティが生まれる</h1>
+            <p>占部直人建築設計事務所は、独創的なデザインと機能性を融合させた建築空間を創造します。
+               自然との調和、光と影のバランス、そして使う人々の生活を豊かにする空間設計を大切にしています。</p>
+            <a href="#works" class="hero-btn">作品を見る</a>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- 作品セクション -->
+    <section id="works">
+        <h2 class="section-title">作品</h2>
+        <div class="works">
+            <div class="work-item">
+                <img src="/api/placeholder/600/400" alt="建築作品1" class="work-image">
+                <div class="work-overlay">
+                    <h3 class="work-title">光庭のある家</h3>
+                    <p class="work-description">自然光を最大限に活かし、四季の変化を室内に映し出す住宅。中央の光庭を中心に生活空間が広がります。</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <img src="/api/placeholder/600/401" alt="建築作品2" class="work-image">
+                <div class="work-overlay">
+                    <h3 class="work-title">海辺のリゾートヴィラ</h3>
+                    <p class="work-description">海との一体感を追求した別荘。大きな開口部と木材の温かみが特徴的な空間です。</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <img src="/api/placeholder/600/402" alt="建築作品3" class="work-image">
+                <div class="work-overlay">
+                    <h3 class="work-title">都市のオアシス</h3>
+                    <p class="work-description">都会の中の静寂を追求したオフィスビル。緑を取り入れた設計で、働く人のリラクゼーションを促します。</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <img src="/api/placeholder/600/403" alt="建築作品4" class="work-image">
+                <div class="work-overlay">
+                    <h3 class="work-title">モダンな美術館</h3>
+                    <p class="work-description">アートを引き立てるシンプルかつ大胆な空間設計。訪れる人の感性を刺激する建築です。</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <img src="/api/placeholder/600/404" alt="建築作品5" class="work-image">
+                <div class="work-overlay">
+                    <h3 class="work-title">竹林に囲まれた茶室</h3>
+                    <p class="work-description">伝統と現代を融合させた茶室。自然素材を活かした空間が、訪れる人の心を静めます。</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <img src="/api/placeholder/600/405" alt="建築作品6" class="work-image">
+                <div class="work-overlay">
+                    <h3 class="work-title">山の見える住宅</h3>
+                    <p class="work-description">雄大な山々を一望できる住宅。自然の風景を室内から楽しめるよう、窓の配置にこだわりました。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 視差効果セクション -->
+    <div class="parallax-bg" style="background-image: url('/api/placeholder/1920/1200');">
+        <div class="parallax-overlay">
+            <div class="parallax-content">
+                <h2>建築は人々の暮らしを彩る芸術</h2>
+                <p>私たちは単なる建物ではなく、人々の生活が織りなす物語の舞台を創造します。
+                   機能性と美しさを兼ね備えた空間で、あなたの暮らしに新たな価値を。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 建築哲学セクション -->
+    <section id="philosophy">
+        <h2 class="section-title">建築哲学</h2>
+        <div class="philosophy-content">
+            <p>占部直人建築設計事務所では、建築を通じて人と環境、過去と未来をつなぐことを目指しています。私たちの設計は、クライアントの想いを形にするだけでなく、その空間を使う人々の日常に豊かさをもたらすことを大切にしています。</p>
+            <p>自然光や風、周囲の環境との調和を考慮した設計により、季節の移ろいや時間の流れを感じられる空間づくりを行います。また、素材選びにもこだわり、経年変化による美しさも設計に取り入れています。</p>
+            <p>建築は単なる物質的な構造物ではなく、そこに暮らす人々の記憶や感情を育む場所。私たちはその信念のもと、一つひとつのプロジェクトに真摯に向き合い、オリジナリティのある空間を生み出しています。</p>
+        </div>
+    </section>
+
+    <!-- プロフィールセクション -->
+    <section id="profile">
+        <h2 class="section-title">プロフィール</h2>
+        <div class="profile">
+            <img src="/api/placeholder/600/800" alt="占部直人" class="profile-image">
+            <div class="profile-content">
+                <h3>占部 直人</h3>
+                <p>1975年東京生まれ。東京大学工学部建築学科卒業後、ロンドン建築協会で学び、世界的な建築事務所での勤務を経て独立。</p>
+                <p>国内外で多数のプロジェクトを手がけ、日本建築学会賞、グッドデザイン賞など数々の賞を受賞。住宅からパブリックスペースまで、幅広い分野で活動している。</p>
+                <p>「人と環境をつなぐ建築」をテーマに、機能性と芸術性を融合させた作品を生み出し続けている。講演会や大学での講義も行い、次世代の建築家の育成にも力を入れている。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- お問い合わせセクション -->
+    <section id="contact" class="contact">
+        <h2 class="section-title">お問い合わせ</h2>
+        <form class="contact-form">
+            <div class="form-group">
+                <label for="name">お名前</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">電話番号</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="subject">件名</label>
+                <input type="text" id="subject" name="subject" required>
+            </div>
+            <div class="form-group">
+                <label for="message">メッセージ</label>
+                <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">送信する</button>
+        </form>
+    </section>
+
+    <!-- フッター -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">占部直人建築設計事務所</div>
+            <ul class="footer-links">
+                <li><a href="#works">作品</a></li>
+                <li><a href="#philosophy">建築哲学</a></li>
+                <li><a href="#profile">プロフィール</a></li>
+                <li><a href="#contact">お問い合わせ</a></li>
+            </ul>
+            <ul class="social-links">
+                <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                <li><a href="#"><i class="fab fa-pinterest"></i></a></li>
+            </ul>
+            <p class="copyright">© 2025 占部直人建築設計事務所. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // スライドショー
+        const slides = document.querySelectorAll('.hero-slide');
+        let currentSlide = 0;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        // 5秒ごとにスライド切り替え
+        setInterval(nextSlide, 5000);
+
+        // スクロール時のナビゲーション背景変更
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // スクロールアニメーション
+        function isElementInViewport(el) {
+            const rect = el.getBoundingClientRect();
+            return (
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8
+            );
+        }
+
+        function handleScrollAnimation() {
+            const elements = [
+                document.querySelector('.works'),
+                document.querySelector('.philosophy-content'),
+                document.querySelector('.profile-content'),
+                document.querySelector('.profile-image'),
+                document.querySelector('.contact-form')
+            ];
+
+            elements.forEach(element => {
+                if (isElementInViewport(element) && !element.classList.contains('visible')) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // スクロール時とページ読み込み時にアニメーションチェック
+        window.addEventListener('scroll', handleScrollAnimation);
+        window.addEventListener('load', handleScrollAnimation);
+
+        // スムーズスクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
